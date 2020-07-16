@@ -30,10 +30,12 @@ def parseLogLines(lines):
     header = ["Time"]
     data = {}
     time_regex = "(\d+)\/(\d+)\/(\d+)\s+(\d+)\:(\d+)\:(\d+)"
+    curr_time = ""
 
     # going through all lines in log
     for line in lines:
         result = re.search(time_regex, line)
+        # current line is a timestamp
         if result:
             ctg = result.groups()
             curr_time = dtm(int(ctg[2]), int(ctg[1]), int(ctg[0]), int(ctg[3]), int(ctg[4]), int(ctg[5]))
@@ -43,11 +45,12 @@ def parseLogLines(lines):
                     data = {"Time":curr_time, "Comments":""}
             else:
                 data = {"Time":curr_time, "Comments":""}
-        elif "AVISO 1" in line or "AVISO SISTEMA NORMALIZADO gc" in line:
+        elif "AVISO 1" in line or "AVISO SISTEMA NORMALIZADO gc" in line and curr_time:
             stats[-1]["Comments"] = line.replace("[MONITOR] ", "")
-        elif "AVISO" in line:
+        elif "AVISO" in line and curr_time:
             data["Comments"] = line.replace("[MONITOR] ", "")
-        elif ":" in line:
+        # current line has a value to be stored
+        elif ":" in line and curr_time:
             l = line.replace("[MONITOR] ", "").split(":")
             k = l[0].strip()
             v = l[1].strip()
@@ -63,7 +66,8 @@ def parseLogLines(lines):
                     stats.append(data)
                 else:
                     stats[-1].update(data)'''
-        elif "%" in line:
+        # current line has a value to be stored
+        elif "%" in line and curr_time:
             if "heap" in k:
                 if "Heap %" not in header:
                     header.append("Heap %")
