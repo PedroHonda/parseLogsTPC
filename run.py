@@ -115,6 +115,8 @@ if __name__ == "__main__":
     heap_perc = []
     perm_perc = []
     garb_perc = []
+    arch_open = []
+    qnt_http = []
     try:
         for i,stat in enumerate(stats):
             for j,h in enumerate(header):
@@ -128,6 +130,10 @@ if __name__ == "__main__":
                         perm_perc.append(stat[h])
                     elif "Garbage %" in h:
                         garb_perc.append(stat[h])
+                    elif "Arquivos Abertos" in h:
+                        arch_open.append(stat[h]/100)
+                    elif "Quantidade HTTP" in h:
+                        qnt_http.append(stat[h]/100)
                 else:
                     ws.cell(row=2+i, column=1+j).value = ""
     except:
@@ -141,6 +147,8 @@ if __name__ == "__main__":
     fig.add_trace(go.Scatter(x=t, y=heap_perc, name="Heap %"))
     fig.add_trace(go.Scatter(x=t, y=perm_perc, name="Perm %"))
     fig.add_trace(go.Scatter(x=t, y=garb_perc, name="Garbage %"))
+    fig.add_trace(go.Scatter(x=t, y=arch_open, name="Arquivos abertos/100"))
+    fig.add_trace(go.Scatter(x=t, y=qnt_http, name="Quantidade HTTP/100"))
     plotly.offline.plot(fig, filename = "./Reports/" + report_name + ".html", auto_open=False)
     print("\n\n")
     if sys.version_info[0] == 3:
